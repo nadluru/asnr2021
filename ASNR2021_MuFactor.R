@@ -99,6 +99,7 @@ p = basicdemo %>%
   facet_rep_grid(ConsensusDiagnosis ~ Sex, scales = 'free_y') + 
   labs(x = 'Age y', y = 'Subjects ordered by their age') + 
   gtheme + 
+  scale_x_continuous(breaks = pretty_breaks(n = 10)) +
   theme(axis.text.y = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5),
         strip.text.x = element_text(size = 16),
@@ -108,13 +109,16 @@ p = basicdemo %>%
         panel.grid.minor.x = element_line(size = 0.2, 
                                           linetype = 'solid', 
                                           color = 'gray'), 
-        axis.ticks.length.y = unit(0.125, 'cm')) + 
-  scale_x_continuous(breaks = pretty_breaks(n = 10))
+        panel.spacing.y = unit(-1.0, 'lines'),
+        axis.ticks.length.y = unit(0.125, 'cm'),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA))
 p
 ggsave(paste0(figroot, 'BasicDemographics_ASNR2021', '.pdf'),
        width = 5.65,
        height = 6.20,
-       p)
+       p,
+       bg = 'transparent')
 
 #' # Geodesic distance matrix
 pb = progress_bar$new(total = basicdemo %>% nrow)
@@ -255,20 +259,24 @@ p = mdls %>%
        y = TeX("$\\Delta$ \\[RGPL\\] a.u.")) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_reordered() +
+  guides(color = guide_legend(label.position = 'right')) +
   theme(axis.text.x = element_text(angle = 90,
                                    hjust = 1,
                                    vjust = 0.5,
                                    margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
+        axis.title.y = element_text(margin = margin(0, -15, 0, 0)),
+        panel.spacing.x = unit(-2.5, 'lines'),
         legend.title = element_blank(),
-        panel.spacing = unit(0.000001, "lines"),
         axis.ticks.length = unit(-0.25, "cm"),
-        axis.text.y = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))) +
-  guides(color = guide_legend(label.position = 'right'))
+        axis.text.y = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA))
 p
 ggsave(paste0(figroot, 'ConsensusDiagnosisEffects_ASNR2021', '.pdf'),
        width = 9.0,
        height = 5.75,
-       p)
+       p,
+       bg = 'transparent')
 
 #' ## Consensus diagnosis (density)
 #+ fig.width=12.25, fig.height=5.0, warning=F
@@ -286,19 +294,6 @@ p = orderInfoRegions %>% right_join(distancedf) %>%  mutate(RegionalName = Regio
   facet_rep_wrap(fct_reorder(RegionalName, AmC, .desc = T) ~ .,
                  ncol = 5) +
   scale_x_log10(breaks = c(0.5, 0.75, 1.0, 1.3, 1.75, 2.0, 3.0)) + annotation_logticks(sides = 'b', scaled = T) +
-  gtheme +
-  theme(axis.text.x = element_text(angle = 90,
-                                   hjust = 1,
-                                   vjust = 0.5,
-                                   size = 11,
-                                   margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
-        legend.title = element_blank(),
-        strip.text.x = element_text(size = 12),
-        panel.spacing = unit(0.000001, "lines"),
-        axis.ticks.length = unit(-0.25, "cm"),
-        legend.margin = margin(0, 0, 0, 0), 
-        legend.box.margin = margin(5, -10, -10, -10),
-        axis.text.y = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))) +
   labs(x = 'Relative geodesic path length (RGPL) a.u.',
        y = TeX('Sample density $a.u.^-^1$')) +
   geom_vline(data = distancedf %>%
@@ -310,19 +305,38 @@ p = orderInfoRegions %>% right_join(distancedf) %>%  mutate(RegionalName = Regio
                  color = Consensus.Diagnosis),
              linetype = 2,
              size = 1.0) +
-  scale_color_manual(values = c('Blue', 'Orange', 'Red'))
+  scale_color_manual(values = c('Blue', 'Orange', 'Red')) +
+  gtheme +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5,
+                                   size = 11,
+                                   margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
+        legend.title = element_blank(),
+        strip.text.x = element_text(size = 12),
+        panel.spacing.x = unit(-2.0, "lines"),
+        panel.spacing.y = unit(-2.5, 'lines'),
+        axis.ticks.length = unit(-0.25, "cm"),
+        legend.margin = margin(0, 0, 0, 0), 
+        legend.box.margin = margin(5, -10, -10, -10),
+        axis.title.y = element_text(margin = margin(0, -15, 0, 0)),
+        axis.title.x = element_text(margin = margin(-10, 0, 0, 0)),
+        axis.text.y = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA))
 p
 ggsave(paste0(figroot, 'DistributionsOrdered_ConsensusDiagnosis_RGND_ASNR2021', '.pdf'),
        width = 12.25,
        height = 5.0,
-       p)
+       p,
+       bg = 'transparent')
 
 #' ## Age x consensus diagnosis
 #+ fig.width=8.0, fig.height=6.75, warning=F
 p = orderInfoRegions %>% right_join(distancedf) %>% ggplot(aes(x = Age, y = MeanDistance, color = Consensus.Diagnosis)) +
   geom_point(size = 1, shape = 21, fill = NA) +
   geom_smooth(method = 'lm', alpha = 0.1, size = 0.5) +
-  geom_text(aes(label = annotationagexcd,
+  geom_text(aes(label = '',
                 x = Inf,
                 y = Inf), 
             size = 8,
@@ -336,15 +350,20 @@ p = orderInfoRegions %>% right_join(distancedf) %>% ggplot(aes(x = Age, y = Mean
   gtheme +
   theme(panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
-        legend.margin = margin(0, 0, 0, 0), 
+        legend.margin = margin(0, 0, -5, 0), 
         legend.box.margin = margin(5, -10, -10, -10),
-        strip.text.x = element_text(size = 8)) +
+        strip.text.x = element_text(size = 10, margin = margin(0, 0, 0, 0)),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        panel.spacing.x = unit(-1.5, "lines"),
+        panel.spacing.y = unit(-0.5, 'lines')) +
   scale_color_manual(values = c('Blue', 'Orange', 'Red')) 
 p
 ggsave(paste0(figroot, 'AgeXConsensusDiagnosis_RGND_ASNR2021', '.pdf'),
        width = 8.0,
        height = 6.75,
-       p)
+       p,
+       bg = 'transparent')
 
 #' # Subject level visualization
 # Setting up data and some visualization parameters
@@ -366,7 +385,8 @@ wideDistanceDF = distancedf %>%
 meanDistanceMatrix =  wideDistanceDF %>%
   select(-SubjectID, -Age, -Sex, -Consensus.Diagnosis, -CDSex) %>% 
   data.matrix
-rownames(meanDistanceMatrix) = wideDistanceDF$SubjectID %>% gsub('ADCP_', '', .)
+# rownames(meanDistanceMatrix) = wideDistanceDF$SubjectID %>% gsub('ADCP_', '', .)
+rownames(meanDistanceMatrix) = meanDistanceMatrix %>% nrow %>% seq(1, .) %>% str_pad(3, pad = '0')
 ageColFun = colorRamp2(c(min, median, max) %>% map_dbl(rlang::exec, wideDistanceDF$Age, na.rm = T), 
                        topo.colors(3)) 
 ha = rowAnnotation(
