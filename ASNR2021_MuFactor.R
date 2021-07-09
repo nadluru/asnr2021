@@ -126,7 +126,7 @@ distancedf = pmap(list(basicdemo$ConnectomePaths,
                          wtc = read.csv(..1,
                                         sep = ",",
                                         header = F) %>% as.matrix
-                         wtc = (wtc + t(wtc)) * (paste0(csvroot, 'ADCP_1021_mu.txt') %>% scan)
+                         wtc = (wtc + t(wtc)) * (paste0(csvroot, 'ADCP_', ..2, '_mu.txt') %>% scan)
                          net = graph_from_adjacency_matrix(wtc^(-1),
                                                            weighted = T,
                                                            diag = F,
@@ -257,8 +257,9 @@ p = mdls %>%
                                 estimate, term), 
              y = estimate)) +
   geom_point() +
-  geom_text(aes(label = ifelse(p.value <= 0.05, "***", ""),
-                y = estimate + std.error), vjust = 0) +
+  geom_text(aes(label = ifelse(p.value <= 0.05, "*", ""),
+                y = estimate + std.error), vjust = 0.5,
+            size = 8) +
   geom_errorbar(aes(ymin = estimate - std.error,
                     ymax = estimate + std.error),
                 width = 0.5) +
@@ -283,18 +284,18 @@ p = mdls %>%
   theme(axis.text.x = element_text(angle = 90,
                                    hjust = 1,
                                    vjust = 0.5,
-                                   margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
-        axis.title.y = element_text(margin = margin(0, -15, 0, 0)),
+                                   margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"), size = 15),
+        axis.title.y = element_text(margin = margin(0, -15, 0, 0), size = 20),
         panel.spacing.x = unit(-2.5, 'lines'),
         legend.title = element_blank(),
         axis.ticks.length = unit(-0.25, "cm"),
-        axis.text.y = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
+        axis.text.y = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"), size = 20),
         panel.grid.major.x = element_blank(),
-        strip.text.x = element_text(size = 15, margin = margin(0, 0, -1.7, 0)))
+        strip.text.x = element_text(size = 20, margin = margin(0, 0, -1.7, 0)))
 p
 ggsave(paste0(figroot, 'ConsensusDiagnosisEffects_ASNR2021', '.pdf'),
-       width = 9.0,
-       height = 5.75,
+       width = 6.7,
+       height = 5.3,
        p)
 
 #' ## Consensus diagnosis (density)
